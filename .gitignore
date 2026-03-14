@@ -1,0 +1,40 @@
+# ===== Build outputs =====
+target/
+out/
+bin/
+
+# ===== Java / Maven =====
+*.class
+*.jar
+*.war
+*.ear
+
+# ===== Native / packaged app outputs =====
+*.exe
+*.msi
+*.dll
+
+# ===== Eclipse =====
+.classpath
+.project
+.settings/
+
+# ===== IntelliJ IDEA =====
+.idea/
+*.iml
+
+# ===== VS Code =====
+.vscode/
+
+# ===== OS / editor junk =====
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===== Logs / temp =====
+*.log
+*.tmp
+*.swp
+
+# ===== UnivTool runtime / local app data =====
+.univtool/
