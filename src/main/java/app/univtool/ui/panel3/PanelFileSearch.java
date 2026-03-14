@@ -1,11 +1,9 @@
-// PanelFileSearch.java（新規）
 package app.univtool.ui.panel3;
 
 import java.awt.Desktop;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
-//（ファイル先頭の import 群の末尾あたりに追記）
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
