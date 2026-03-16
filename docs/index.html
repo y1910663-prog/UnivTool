@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UnivTool | 大学生向け学修支援デスクトップアプリ</title>
+  <meta name="description" content="UnivTool は講義、ファイル、時間割、スケジュール、ToDo を一元管理する Java/JavaFX 製デスクトップアプリです。">
+<style>
+  :root{
+    --bg:#f3f5f8;
+    --bg-2:#eef2f7;
+    --panel:#ffffff;
+    --panel-soft:#f8fafd;
+    --ink:#1f2430;
+    --muted:#5f6b7a;
+    --line:#d8deea;
+    --line-strong:#c7d0df;
+
+    --primary:#3f79f2;
+    --primary-hover:#2f6cea;
+    --primary-soft:#eaf1ff;
+
+    --navy:#0f1830;
+    --navy-2:#16213d;
+    --navy-3:#22304a;
+
+    --good:#eaf8ef;
+    --good-ink:#1f7a43;
+
+    --warn:#fff6df;
+    --warn-ink:#a36a00;
+
+    --danger:#fff0f0;
+    --danger-ink:#c04b4b;
+
+    --shadow:0 8px 24px rgba(20, 33, 61, .06);
+    --radius:18px;
+    --max:1120px;
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+
+  body{
+    margin:0;
+    font-family:"Segoe UI","Yu Gothic UI","Meiryo",sans-serif;
+    color:var(--ink);
+    background:linear-gradient(180deg, var(--bg-2) 0%, var(--bg) 180px, var(--bg) 100%);
+    line-height:1.75;
+  }
+
+  a{
+    color:var(--primary);
+    text-decoration:none;
+  }
+  a:hover{text-decoration:underline}
+
+  .wrap{
+    max-width:var(--max);
+    margin:0 auto;
+    padding:0 20px;
+  }
+
+  .hero{
+    background:linear-gradient(180deg, var(--navy) 0%, var(--navy-2) 100%);
+    color:#fff;
+    padding:68px 0 56px;
+    position:relative;
+    overflow:hidden;
+    border-bottom:1px solid rgba(255,255,255,.08);
+  }
+
+  .hero::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      linear-gradient(90deg, rgba(255,255,255,.03), transparent 35%, transparent 65%, rgba(255,255,255,.03)),
+      radial-gradient(circle at 85% 20%, rgba(63,121,242,.20), transparent 18%);
+    pointer-events:none;
+  }
+
+  .hero .wrap{position:relative; z-index:1}
+
+  .hero .eyebrow{
+    display:inline-block;
+    padding:6px 12px;
+    border:1px solid rgba(255,255,255,.14);
+    background:rgba(255,255,255,.06);
+    border-radius:999px;
+    font-size:13px;
+    margin-bottom:18px;
+    color:#dbe5f7;
+  }
+
+  .hero h1{
+    margin:0 0 12px;
+    font-size:clamp(36px,5vw,58px);
+    line-height:1.1;
+    letter-spacing:.02em;
+  }
+
+  .hero p{
+    margin:0;
+    max-width:760px;
+    color:#d4dded;
+    font-size:18px;
+  }
+
+  .hero-actions{
+    margin-top:28px;
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:46px;
+    padding:0 18px;
+    border-radius:12px;
+    font-weight:700;
+    border:1px solid transparent;
+    transition:.18s ease;
+  }
+
+  .btn:hover{
+    transform:translateY(-1px);
+    text-decoration:none;
+  }
+
+  .btn.primary{
+    background:var(--primary);
+    color:#fff;
+    border-color:transparent;
+    box-shadow:0 6px 16px rgba(63,121,242,.22);
+  }
+
+  .btn.primary:hover{
+    background:var(--primary-hover);
+  }
+
+  .btn.secondary{
+    background:rgba(255,255,255,.06);
+    color:#eef4ff;
+    border-color:rgba(255,255,255,.16);
+  }
+
+  .btn.secondary:hover{
+    background:rgba(255,255,255,.10);
+  }
+
+  .sticky-nav{
+    position:sticky;
+    top:0;
+    z-index:20;
+    background:rgba(248,250,253,.92);
+    backdrop-filter:saturate(140%) blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+
+  .sticky-nav .inner{
+    display:flex;
+    gap:16px;
+    flex-wrap:wrap;
+    padding:12px 0;
+  }
+
+  .sticky-nav a{
+    font-size:14px;
+    color:#3a4658;
+    font-weight:700;
+  }
+
+  .sticky-nav a:hover{
+    color:var(--primary);
+    text-decoration:none;
+  }
+
+  section{padding:56px 0}
+
+  h2{
+    font-size:32px;
+    margin:0 0 14px;
+    line-height:1.2;
+    letter-spacing:.01em;
+    color:#202838;
+  }
+
+  .lead{
+    color:var(--muted);
+    font-size:17px;
+    max-width:820px;
+  }
+
+  .grid{
+    display:grid;
+    gap:20px;
+  }
+
+  .grid.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+
+  .card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:24px;
+  }
+
+  .feature .num{
+    width:42px;
+    height:42px;
+    border-radius:12px;
+    display:grid;
+    place-items:center;
+    background:var(--primary-soft);
+    color:var(--primary);
+    font-weight:800;
+    margin-bottom:14px;
+    border:1px solid #cfe0ff;
+  }
+
+  .feature h3,
+  .shot h3,
+  .bug h3,
+  .spec h3{
+    margin:0 0 8px;
+    font-size:22px;
+    color:#243046;
+  }
+
+  .muted{color:var(--muted)}
+
+  .pill{
+    display:inline-block;
+    padding:4px 10px;
+    border-radius:999px;
+    font-size:13px;
+    font-weight:700;
+    background:var(--primary-soft);
+    color:var(--primary);
+    border:1px solid #cfe0ff;
+  }
+
+  .spec-list,.bug-list{
+    display:grid;
+    gap:14px;
+  }
+
+  .spec-item,.bug-item{
+    background:var(--panel-soft);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:18px 18px 16px;
+  }
+
+  .shot{
+    padding:18px;
+  }
+
+  .shot img{
+    width:100%;
+    height:auto;
+    display:block;
+    border-radius:14px;
+    border:1px solid var(--line);
+    background:#f4f7fc;
+  }
+
+  .shot .caption{
+    font-size:14px;
+    color:var(--muted);
+    margin-top:10px;
+  }
+
+  .notice{
+    border:1px solid #cfe0ff;
+    background:var(--primary-soft);
+    border-radius:14px;
+    padding:16px 18px;
+    color:#2b57b5;
+  }
+
+  .table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:16px;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:var(--shadow);
+  }
+
+  .table th,.table td{
+    text-align:left;
+    padding:14px 16px;
+    border-bottom:1px solid var(--line);
+    vertical-align:top;
+    font-size:15px;
+  }
+
+  .table th{
+    background:#f5f7fb;
+    color:#3b4658;
+  }
+
+  .sev-high{
+    background:var(--danger);
+    color:var(--danger-ink);
+    border:1px solid #f2c7c7;
+  }
+
+  .sev-med{
+    background:var(--warn);
+    color:var(--warn-ink);
+    border:1px solid #f0dfab;
+  }
+
+  .sev-low{
+    background:var(--primary-soft);
+    color:var(--primary);
+    border:1px solid #cfe0ff;
+  }
+
+  .status-open{
+    background:#fff3e8;
+    color:#c06a15;
+    border:1px solid #f0c28c;
+  }
+
+  .status-known{
+    background:#f3f6fa;
+    color:#495566;
+    border:1px solid #d4dce7;
+  }
+
+  .status-fix{
+    background:var(--good);
+    color:var(--good-ink);
+    border:1px solid #bfe6cb;
+  }
+
+  footer{
+    padding:42px 0 80px;
+    color:var(--muted);
+    font-size:14px;
+  }
+
+  .small{font-size:14px}
+
+  code.inline{
+    font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    background:var(--primary-soft);
+    border:1px solid #cfe0ff;
+    padding:2px 7px;
+    border-radius:8px;
+    font-size:14px;
+    color:#315fc1;
+  }
+
+  ul.clean{
+    margin:8px 0 0 1.2em;
+    padding:0;
+  }
+
+  @media (max-width: 900px){
+    .grid.cols-3,.grid.cols-2{grid-template-columns:1fr}
+    .hero{padding-top:56px}
+    h2{font-size:28px}
+  }
+
+    .shot > img{
+    width:100%;
+    height:auto;
+    display:block;
+    border-radius:14px;
+    border:1px solid var(--line);
+    background:#f4f7fc;
+  }
+
+  .shot-subgrid{
+    margin-top:16px;
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0,1fr));
+    gap:14px;
+  }
+
+  .shot-subgrid-3{
+    grid-template-columns:repeat(3, minmax(0,1fr));
+  }
+
+  .shot-sub{
+    margin:0;
+    padding:12px;
+    background:var(--panel-soft);
+    border:1px solid var(--line);
+    border-radius:14px;
+  }
+
+  .shot-sub img{
+    width:100%;
+    height:auto;
+    display:block;
+    border-radius:10px;
+    border:1px solid var(--line);
+    background:#fff;
+  }
+
+  .shot-sub figcaption{
+    margin-top:8px;
+    font-size:13px;
+    color:var(--muted);
+    line-height:1.5;
+  }
+
+  @media (max-width: 900px){
+    .shot-subgrid,
+    .shot-subgrid-3{
+      grid-template-columns:1fr;
+    }
+  }
+</style>
+
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <span class="eyebrow">Portfolio / Desktop App / JavaFX</span>
+      <h1>UnivTool</h1>
+      <p>
+        大学生向けの講義・ファイル・時間割・スケジュール・ToDo 一元管理アプリ。
+        Java / JavaFX / SQLite ベースで、講義情報の登録から課題ファイルの保存、
+        期限管理までをローカル環境で完結させている。
+      </p>
+      <div class="hero-actions">
+        <a class="btn primary" href="https://github.com/y1910663-prog/UnivTool/releases/latest">最新版をダウンロード</a>
+        <a class="btn secondary" href="https://github.com/y1910663-prog/UnivTool">GitHub リポジトリ</a>
+        <a class="btn secondary" href="#spec">仕様書へ</a>
+      </div>
+    </div>
+  </header>
+
+  <nav class="sticky-nav">
+    <div class="wrap inner">
+      <a href="#overview">概要</a>
+      <a href="#features">機能</a>
+      <a href="#screens">スクリーンショット</a>
+      <a href="#spec">仕様書</a>
+      <a href="#bugs">既知の不具合</a>
+      <a href="#report">不具合報告</a>
+    </div>
+  </nav>
+
+  <main>
+    <section id="overview">
+      <div class="wrap">
+        <h2>概要</h2>
+        <p class="lead">
+          UnivTool は、複数の授業情報・配布ファイル・課題・時間割・予定を分散させずに管理するための
+          デスクトップアプリである。         
+          タブ構成で機能を分離しつつ、講義情報・ファイル保存・ToDo/Reminder を相互に連携させ、
+          「どの講義の、何回目の、どの課題か」後から追いやすい設計を目指している。
+        </p>
+        <div class="grid cols-3" style="margin-top:22px">
+          <div class="card feature">
+            <div class="num">1</div>
+            <h3>講義情報の一元管理</h3>
+            <p class="muted">年度、学期、曜日・時限、教員、シラバス、科目区分、アーカイブ状態までまとめて管理。</p>
+          </div>
+          <div class="card feature">
+            <div class="num">2</div>
+            <h3>課題ファイルと期限の連携</h3>
+            <p class="muted">ファイル保存時に分類や回数を付与し、課題系ファイルは ToDo / Reminder と連携。</p>
+          </div>
+          <div class="card feature">
+            <div class="num">3</div>
+            <h3>時間割と予定の可視化</h3>
+            <p class="muted">時間割、講義メモ、カレンダー表示を組み合わせて予定を見やすく整理。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="features" style="padding-top:10px">
+      <div class="wrap">
+        <h2>機能</h2>
+        <div class="grid cols-2" style="margin-top:18px">
+          <div class="card">
+            <h3>パネル1: 講義管理</h3>
+            <ul class="clean">
+              <li>講義の追加・編集・削除</li>
+              <li>講義詳細ダイアログから即座に講義情報の参照が可能</li>
+                <ul class="clean sublist">
+                  <li>教授のアドレスやシラバスURLなど一々調べる手間を削減</li>
+                  <li>出席確認の有無、期末試験の有無なども一目で確認可能</li>
+                  <li>登録済みの講義関連ファイルの一覧表示</li>
+                </ul>
+              <li>登録講義とアーカイブ講義の切り替え</li>
+              <li>大学毎に講義プリセット・科目区分プリセットの作成・読込</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>パネル2: ファイル保存</h3>
+            <ul class="clean">
+              <li>ファイルの新規作成</li>
+              <li>ファイル名の命名規則プリセットの作成・読み込み</li>
+                <ul class="clean sublist">
+                  <li>教授指定のファイル名をプリセットに保存することで手間削減</li>
+                </ul>
+              <li>ドラッグ&ドロップ保存</li>
+              <li>ワークスペース内の未登録ファイルの検出</li>
+              <li>教材、課題（未提出）、その他などのメタタグでファイルを分類</li>
+                <ul class="clean sublist">
+                  <li>提出期限を設定することでToDoと自動連携</li>
+                </ul>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>パネル3〜5: 検索・時間割・予定</h3>
+            <ul class="clean">
+              <li>登録されたファイルの検索</li>
+              <li>時間割の便利機能</li>
+              <ul class="clean sublist">
+                  <li>講義詳細の即呼び出し</li>
+                  <li>現在登録されている科目の単位数合計を表示</li>
+                  <li>開講年次や出席確認・定期試験・レポートの有無でハイライト表示</li>
+                </ul>
+              <li>スケジュール・ToDo・Reminderの便利機能</li>
+                <ul class="clean sublist">
+                  <li>課題提出期限の自動連携</li>
+                  <li>カスタムReminderにも対応</li>
+                  <li>出欠確認により、出席率や課題提出率の管理</li>
+                </ul>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>その他</h3>
+            <ul class="clean">
+              <li>ポータブルモード（デモ実装 \ バグ多めなのでOFF推奨）</li>
+              <li>取得単位・各種所要単位などの管理機能（デモ実装）</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+<section id="screens">
+  <div class="wrap">
+    <h2>スクリーンショット</h2>
+    <p class="lead">
+      UnivTool の主要画面。講義管理、ファイル保存、検索、時間割、スケジュール管理まで
+      タブごとに分けて掲載。詳細ダイアログや右クリックメニューなどの補助画面もあわせて掲載している。
+    </p>
+
+    <div class="grid cols-2" style="margin-top:22px">
+
+      <article class="card shot">
+        <img src="assets/img/p1_main.png" alt="講義管理画面">
+        <h3>講義管理</h3>
+        <p class="caption">
+          講義の一覧表示、検索、ソート、アーカイブ済み講義の確認、再読込などを行うメイン画面。
+        </p>
+        <div class="shot-subgrid">
+          <figure class="shot-sub">
+            <img src="assets/img/p1_contextmenu.png" alt="講義一覧の右クリックメニュー">
+            <figcaption>講義一覧の右クリックメニュー</figcaption>
+          </figure>
+          <figure class="shot-sub">
+            <img src="assets/img/p1_coursedetail.png" alt="講義詳細ダイアログ">
+            <figcaption>講義詳細ダイアログ</figcaption>
+          </figure>
+        </div>
+      </article>
+
+      <article class="card shot">
+        <img src="assets/img/p2_filesave.png" alt="ファイル保存画面">
+        <h3>ファイル保存</h3>
+        <p class="caption">
+          新規ファイル作成、ファイル選択、テンプレート登録・管理、ファイル追加ログの確認を行う画面。
+        </p>
+      </article>
+
+      <article class="card shot">
+        <img src="assets/img/p3_filesearch.png" alt="ファイル検索画面">
+        <h3>ファイル検索</h3>
+        <p class="caption">
+          授業科目名・第何回・種類で保存済みファイルを絞り込み、再分類、リネーム、提出期限編集などを行う。
+        </p>
+      </article>
+
+      <article class="card shot">
+        <img src="assets/img/p4_timetable.png" alt="時間割画面">
+        <h3>時間割</h3>
+        <p class="caption">
+          曜日・時限ごとの講義配置、単位数の集計、強調表示条件の指定などを行う。
+        </p>
+      </article>
+
+      <article class="card shot" style="grid-column:1 / -1">
+        <img src="assets/img/p5_schedule.png" alt="スケジュール画面">
+        <h3>スケジュール / ToDo</h3>
+        <p class="caption">
+          カレンダー形式で予定や提出期限を確認でき、右側には期限別に整理された ToDo 一覧を表示する。
+        </p>
+        <div class="shot-subgrid shot-subgrid-3">
+          <figure class="shot-sub">
+            <img src="assets/img/p5_check.png" alt="出席・課題確認ダイアログ">
+            <figcaption>出席・課題確認ダイアログ</figcaption>
+          </figure>
+          <figure class="shot-sub">
+            <img src="assets/img/p5_coursedetail.png" alt="授業回ごとの情報ダイアログ">
+            <figcaption>授業回ごとの情報ダイアログ</figcaption>
+          </figure>
+          <figure class="shot-sub">
+            <img src="assets/img/p5_contextmenu.png" alt="スケジュール画面の右クリックメニュー">
+            <figcaption>スケジュール画面の右クリックメニュー</figcaption>
+          </figure>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+    <section id="spec">
+      <div class="wrap">
+        <h2>仕様書</h2>
+        <div class="grid cols-2" style="margin-top:20px">
+          <div class="card spec">
+            <h3>対象ユーザー</h3>
+            <div class="spec-list">
+              <div class="spec-item">
+                <strong>主対象</strong><br>
+                大学生。特に複数媒体によるオンライン配布資料や提出ファイルを
+                一元管理したい者。
+              </div>
+              <div class="spec-item">
+                <strong>動作環境</strong><br>
+                Windows10，Windows11で動作確認済み。
+              </div>
+            </div>
+          </div>
+          <div class="card spec">
+            <h3>画面構成</h3>
+            <div class="spec-list">
+              <div class="spec-item"><strong>Tab 1:</strong> 講義を追加</div>
+              <div class="spec-item"><strong>Tab 2:</strong> ファイル保存</div>
+              <div class="spec-item"><strong>Tab 3:</strong> ファイル検索</div>
+              <div class="spec-item"><strong>Tab 4:</strong> 時間割</div>
+              <div class="spec-item"><strong>Tab 5:</strong> スケジュール</div>
+            </div>
+          </div>
+        </div>
+
+        <table class="table" aria-label="簡易仕様テーブル">
+          <thead>
+            <tr>
+              <th>項目</th>
+              <th>内容</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>アプリ名</td>
+              <td>UnivTool</td>
+            </tr>
+            <tr>
+              <td>想定用途</td>
+              <td>講義、配布資料、課題、時間割、予定、ToDo の一元管理</td>
+            </tr>
+            <tr>
+              <td>主要技術</td>
+              <td>Java 17 / JavaFX / Maven / SQLite / Gson / Apache POI</td>
+            </tr>
+            <tr>
+              <td>講義データ</td>
+              <td>SQLite に保存。講義名、年度、学期、教員、科目区分、フォルダ名などを保持</td>
+            </tr>
+            <tr>
+              <td>設定データ</td>
+              <td><code class="inline">~/.univtool</code> 配下の JSON / DB に保存</td>
+            </tr>
+            <tr>
+              <td>ワークスペース</td>
+              <td>既定候補はユーザホーム直下の <code class="inline">UnivWorkspace</code>。講義ごとに保存フォルダが自動で作成される</td>
+            </tr>
+            <tr>
+              <td>テンプレート</td>
+              <td>プリセット / テンプレート / ファイル名規則を利用可能</td>
+            </tr>
+            <tr>
+              <td>課題連携</td>
+              <td>課題系ファイルは索引登録後、ToDo / Reminder と同期して期限表示</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="bugs">
+      <div class="wrap">
+        <h2>既知の不具合 / 課題</h2>
+        <p class="lead">
+          本アプリは開発途中であり、以下の不具合が確認できている。
+        </p>
+
+        <table class="table" aria-label="既知の不具合一覧">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>重要度</th>
+              <th>状態</th>
+              <th>概要</th>
+              <th>内容</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>BUG-001</td>
+              <td><span class="pill sev-high">高</span></td>
+              <td><span class="pill status-open">未修正</span></td>
+              <td>一部ポップアップがフォーカス喪失で閉じる</td>
+              <td>
+                一部のポップアップウィンドウにおいて、フォーカスが外れた際にウィンドウが閉じてしまう。
+                講義情報やシラバス情報を外部ページからコピー＆ペーストする際に、入力途中でポップアップが消えてしまい、
+                操作性を大きく損ねている。パネル1~4のそれぞれにおいて、ポップアップウィンドウの仕様が統一されていない
+                ことが原因であると考えられる。
+              </td>
+            </tr>
+            <tr>
+              <td>BUG-002</td>
+              <td><span class="pill sev-med">中</span></td>
+              <td><span class="pill status-open">未修正</span></td>
+              <td>初回起動時の画面遷移が不安定</td>
+              <td>
+                初回起動時にはワークスペース設定画面が表示されるが、フォルダ選択後、
+                本来は自動的に初期画面へ遷移するはずのところ、正しく遷移しない場合がある。
+                現状では、一度アプリを終了して再起動することで正しく遷移する。
+              </td>
+            </tr>
+            <tr>
+              <td>BUG-003</td>
+              <td><span class="pill sev-med">中</span></td>
+              <td><span class="pill status-open">未修整</span></td>
+              <td>ポータブルモード全般</td>
+              <td>
+                ポータブルモードの切替は画面右上の「メニュー」から実行できるが、
+                現状では不具合が多く、基本的には常にオフで使用することを推奨する。
+                特に複数デバイス間における時間割などの設定ファイルの引継ぎに問題があり、
+                これは本アプリにおいて、データの保存場所がとっ散らかっているためであると思われる
+              </td>
+            </tr>
+            <tr>
+              <td>BUG-004</td>
+              <td><span class="pill sev-med">中</span></td>
+              <td><span class="pill status-open">未修正</span></td>
+              <td>右クリックのコンテキストメニューが重複表示される</td>
+              <td>
+                パネル1の講義一覧およびパネル3のファイル一覧において、右クリックで表示されるコンテキストメニューが、
+                メニュー外をクリックしない限り閉じない場合がある。
+                そのため、連続して右クリック操作を行うとコンテキストメニューが複数重なって表示され、
+                画面が見づらくなったり、誤操作の原因になる。
+              </td>
+            </tr>
+            <tr>
+              <td>BUG-004</td>
+              <td><span class="pill sev-low">低</span></td>
+              <td><span class="pill status-known">既知</span></td>
+              <td>その他一部挙動の不安定さ</td>
+              <td>
+                上記以外にも一部挙動が不安定になる場合がある。
+              </td>
+           </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="report">
+      <div class="wrap">
+        <h2>不具合の報告</h2>
+        <p class="lead">
+          不具合を見つけた場合は、
+          GitHub Issue から報告してくださると助かります。
+        </p>
+
+        <div class="grid cols-2" style="margin-top:20px">
+          <div class="card">
+            <h3>報告時に書いてほしい内容</h3>
+            <ul class="clean">
+              <li>使用バージョン</li>
+              <li>発生した画面や機能</li>
+              <li>再現手順</li>
+              <li>期待される動作と実際の動作</li>
+              <li>スクリーンショットやエラーメッセージ</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>GitHub Issue で報告する</h3>
+            <p class="muted">
+              下のボタンから、不具合報告フォームを開けます。
+            </p>
+            <div style="margin-top:14px; display:flex; gap:12px; flex-wrap:wrap;">
+              <a
+                class="btn primary"
+                href="https://github.com/y1910663-prog/UnivTool/issues/new?template=bug_report.yml"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                バグ報告フォームを開く
+              </a>
+              <a
+                class="btn secondary"
+                href="https://github.com/y1910663-prog/UnivTool/issues"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                既存 Issue を確認
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div>フッターに書くこと特に無し</div>
+      <div class="small">将来的に何か書くかも？</div>
+    </div>
+  </footer>
+</body>
+</html>

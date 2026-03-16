@@ -1,0 +1,86 @@
+/* UnivTool dark theme. Save as UTF-8 (no BOM). */
+
+/* App background override */
+.app-root {
+  -fx-background-color: #0F172A;
+}
+
+/* MenuBar */
+.menu-bar {
+  -fx-background-color: linear-gradient(to bottom, #0B1220, #0e1526);
+  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.45), 12, 0.25, 0, 1);
+}
+.menu-bar .label { -fx-text-fill: #E5E7EB; }
+
+/* Tab highlight */
+.tab-pane:top > .tab-header-area > .headers-region > .tab:selected {
+  -fx-border-color: transparent transparent #8B5CF6 transparent;
+}
+
+/* Card */
+.card {
+  -fx-background-color: #0B1220;
+  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 16, 0.25, 0, 2);
+}
+
+/* Buttons */
+.button {
+  -fx-background-color:
+      linear-gradient(to bottom, derive(#8B5CF6, 15%), #8B5CF6);
+}
+.button.flat, .toggle-button.flat {
+  -fx-background-color: #1F2937;
+  -fx-text-fill: #E5E7EB;
+}
+
+/* Text inputs */
+.text-input, .text-area {
+  -fx-background-color: #0e1526;
+  -fx-border-color: #273043;
+  -fx-text-fill: #E5E7EB;
+}
+.text-input:focused, .text-area:focused {
+  -fx-border-color: #8B5CF6;
+  -fx-effect: dropshadow(gaussian, rgba(139,92,246,0.35), 8, 0.3, 0, 0);
+}
+
+/* ComboBox / ChoiceBox / Spinner */
+.combo-box-base, .choice-box, .spinner {
+  -fx-background-color: #0e1526;
+  -fx-border-color: #273043;
+}
+
+/* TableView */
+.table-view {
+  -fx-background-color: #0e1526;
+  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.55), 16, 0.25, 0, 2);
+}
+.table-view .column-header-background {
+  -fx-background-color: #111827;
+}
+.table-row-cell {
+  -fx-background-color: #0e1526;
+}
+.table-row-cell:odd {
+  -fx-background-color: #0c1322;
+}
+.table-row-cell:selected {
+  -fx-background-color: #1F2937;
+}
+
+/* ContextMenu / Tooltip */
+.context-menu {
+  -fx-background-color: #0e1526;
+  -fx-background-radius: 8px;
+  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 16, 0.25, 0, 2);
+}
+.tooltip {
+  -fx-background-color: #111827;
+  -fx-text-fill: #E5E7EB;
+}
+
+/* ScrollBar */
+.scroll-bar .thumb {
+  -fx-background-color: #334155;
+  -fx-background-radius: 8px;
+}

@@ -1,0 +1,98 @@
+name: バグ報告
+description: UnivTool の不具合を報告する
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ご報告ありがとうございます。
+        再現に必要な情報を分かる範囲で記入してください。
+
+  - type: input
+    id: version
+    attributes:
+      label: アプリのバージョン
+      description: 例: v0.1.0
+      placeholder: v0.1.0
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: OS
+      options:
+        - Windows 11
+        - Windows 10
+        - その他
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: 発生画面 / 機能
+      options:
+        - 講義管理
+        - ファイル保存
+        - ファイル検索
+        - 時間割
+        - スケジュール / ToDo
+        - 起動時
+        - 保存 / 読み込み
+        - その他
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 再現手順
+      description: できるだけ順番どおりに書いてください
+      placeholder: |
+        1. アプリを起動
+        2. ○○を開く
+        3. △△をクリック
+        4. エラーが発生
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期待される動作
+      placeholder: 例: 保存が正常に完了する
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: 実際の動作
+      placeholder: 例: 何も保存されない / エラーダイアログが出る / アプリが落ちる
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: エラーメッセージ / ログ / 補足
+      description: 例外メッセージや気づいたことがあれば記入してください
+      render: shell
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: スクリーンショット
+      description: 画像があれば貼り付けてください
+
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: 確認事項
+      options:
+        - label: 既存 Issue を確認しました
+          required: true
+        - label: 個人情報やローカルパスを必要に応じて伏せました
+          required: true
